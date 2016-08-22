@@ -12,8 +12,8 @@ public class Campaign {
 	private String adContent;
 	private Date creationDate;
 	private Date expireDate;
-	
-	
+	private Link link;
+
 	public Campaign(){
 		
 	}
@@ -60,6 +60,14 @@ public class Campaign {
 
 	public void setCreationDate(Date date) {
 		this.creationDate = date;
+	}
+	
+	public Link getLink() {
+		return link;
+	}
+
+	public void setLink(Link link) {
+		this.link = link;
 	}
 
 }

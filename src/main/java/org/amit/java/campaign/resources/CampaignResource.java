@@ -16,6 +16,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.amit.java.campaign.model.Campaign;
+import org.amit.java.campaign.model.Link;
 import org.amit.java.campaign.service.CampaignService;
 
 
@@ -25,16 +26,36 @@ import org.amit.java.campaign.service.CampaignService;
 public class CampaignResource {
 	
 	CampaignService campaignService = new CampaignService();
-	
+
+	@GET
+	@Path("/getAllCampaigns/{partnerId}")
+	public List<Campaign> getAllCampaigns(@Context UriInfo uriInfo, @PathParam("partnerId") String partnerId){
+		
+		List<Campaign> campaignList = campaignService.getCampaign(partnerId,"GETALL");
+		
+		return campaignList;
+	}
+
 	
 	@GET
 	@Path("/{partnerId}")
-	public List<Campaign> getCampaign(@PathParam("partnerId") String partnerId){
-		return campaignService.getCampaign(partnerId,"GET");		
+	public List<Campaign> getCampaign(@Context UriInfo uriInfo, @PathParam("partnerId") String partnerId){
+		List<Campaign> campaignList = campaignService.getCampaign(partnerId,"GET");
+		
+		URI uri = uriInfo.getBaseUriBuilder().path("/getAllCampaigns/"+partnerId).build();
+		Link link = new Link();
+		link.sethLink(uri.toString());
+		link.setRel("getAllCampaigns");
+		
+		for(Campaign campaign : campaignList)
+		{
+			campaign.setLink(link);
+		}	
+		return campaignList;
 	}
 
 	@POST
-	public Response addMessage(@Context UriInfo uriInfo, Campaign campaign){
+	public Response addCampaign(@Context UriInfo uriInfo, Campaign campaign){
 		
 		Calendar cal = (Calendar.getInstance());
 		campaign.setCreationDate(cal.getTime());
@@ -46,7 +67,13 @@ public class CampaignResource {
 		campaignList.add(campaign);
 		campaignService.addCampaign(campaign.getPartnerId(),campaignList);
 		
-		URI uri = uriInfo.getAbsolutePathBuilder().path(campaign.getPartnerId()).build();
-		return Response.created(uri).entity(campaign).build();		
+		URI uri = uriInfo.getBaseUriBuilder().path("/getAllCampaigns/"+campaign.getPartnerId()).build();
+		Link link = new Link();
+		link.sethLink(uri.toString());
+		link.setRel("getAllCampaigns");
+		campaign.setLink(link);
+		
+		URI absoluteUri = uriInfo.getAbsolutePathBuilder().path(campaign.getPartnerId()).build();
+		return Response.created(absoluteUri).entity(campaign).build();		
 	}	
 }
