@@ -17,6 +17,18 @@ public class Campaign {
 	public Campaign(){
 		
 	}
+	
+	public Campaign(String partnerId, int duration, String adContent,
+			Date creationDate, Date expireDate) {
+		super();
+		this.partnerId = partnerId;
+		this.duration = duration;
+		this.adContent = adContent;
+		this.creationDate = creationDate;
+		this.expireDate = expireDate;
+	}
+
+	
 		
 	public String getPartnerId() {
 		return partnerId;
